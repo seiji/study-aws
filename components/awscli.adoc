@@ -1,0 +1,204 @@
+
+== AWS CLI
+> AWS Command Line Interface (AWS CLI) は、コマンドラインシェルでコマンドを使用して AWS サービスとやり取りするためのオープンソースツールです
+-- https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-chap-welcome.html[AWS Command Line Interface ユーザーガイド]
+
+NOTE: インストールについては
+https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-chap-install.html[AWS Command Line Interface ユーザーガイド > AWS CLI のインストール]
+を参照
+
+----
+$ aws --version
+aws-cli/2.0.32 Python/3.8.4 Darwin/19.6.0 botocore/2.0.0dev35
+----
+
+=== AWS CLIの設定
+https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-chap-configure.html[AWS Command Line Interface ユーザーガイド > AWS CLIの設定]
+
+設定のコレクションをプロファイルと呼ぶ。
+
+TIP: プロファイルを指定し、自分のアクセスキーを基に設定する
+
+----
+$ aws configure --profile produser
+AWS Access Key ID [None]:
+AWS Secret Access Key [None]:
+Default region name [None]: ap-northeast-1
+Default output format [None]: text
+----
+
+=== 設定ファイルと認証情報ファイル
+> AWS CLI は aws configure で指定された機密性の高い認証情報を、ホームディレクトリの .aws という名前のフォルダにある credentials という名前のローカルファイルに保存します。aws configure で指定された機密性の低い設定オプションは、config という名前のローカルファイルに保存されるだけでなく、ホームディレクトリの .aws フォルダにも保存されます。
+-- https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where[AWS Command Line Interface ユーザーガイド > 設定ファイルと認証情報ファイルの設定 > 構成設定はどこに保存されていますか]
+
+NOTE: 設定ファイル(config)の方にまとめることもできる
+
+==== 設定ファイル
+~/.aws/config
+
+----
+[produser]
+region=ap-northeast-1
+output=json
+----
+
+NOTE: AWS_CONFIG_FILEで変更することもできる
+
+==== 認証情報ファイル
+~/.aws/credentials
+
+----
+[produser]
+aws_access_key_id=
+aws_secret_access_key=
+----
+
+NOTE: AWS_SHARED_CREDENTIALS_FILEで変更することもできる
+
+=== 構成設定と優先順位
+> AWS CLI は、システム環境変数、ユーザー環境変数、ローカルの AWS 設定ファイル、またはコマンドラインでパラメータとして明示的に宣言されたものなど、複数の場所にある認証情報と構成設定を使用します。
+-- https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html#cli-configure-quickstart-precedence[AWS Command Line Interface ユーザーガイド > 構成設定と優先順位]
+
+1. https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-options.html[コマンドラインオプション]
+2. https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-envvars.html[環境変数]
+3. https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-files.html[CLI認証情報ファイル]
+4. https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-files.html[CLI設定ファイル]
+5. https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task-iam-roles.html[コンテナ認証情報]
+6. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html[インスタンスプロファイル認証情報]
+
+=== AWS CLI の使用
+
+==== aws sts get-caller-identity
+
+> Returns details about the IAM user or role whose credentials are used to call the operation.
+-- https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html
+
+TIP: 自分のプロファイルを使用して実行してみる
+
+----
+$ aws sts get-caller-identity --profile produser
+{
+    "UserId": "AIDASAMPLEUSERID",
+    "Account": "1234567890123",
+    "Arn": "arn:aws:iam::1234567890123:user/produser"
+}
+----
+
+=== AWS CLI の使用(MFA認証) - アクセス拒否
+
+==== aws s3 ls
+
+> List S3 objects and common prefixes under a prefix or all S3 buckets.
+-- https://docs.aws.amazon.com/cli/latest/reference/s3/ls.html
+
+TIP: 自分のプロファイルを使用して実行してみる
+
+----
+$ aws s3 ls --profile produser
+
+An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied
+----
+
+> MFA デバイスの使用時に AWS CLI を使用してリソースとやり取りする場合は、その後、一時セッションを作成する必要があります。
+-- https://aws.amazon.com/jp/premiumsupport/knowledge-center/authenticate-mfa-cli/
+
+=== 一時的セキュリティ認証情報
+
+> AWS Security Token Service (AWS STS) を使用して、AWS リソースへのアクセスをコントロールできる一時的セキュリティ認証情報を持つ、信頼されたユーザーを作成および提供することができます。
+-- https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html
+
+==== aws sts get-session-token
+
+> Returns a set of temporary credentials for an AWS account or IAM user. The credentials consist of an access key ID, a secret access key, and a security token.
+-- https://docs.aws.amazon.com/cli/latest/reference/sts/get-session-token.html
+
+TIP: 自分のプロファイルを使用して実行してみる
+
+----
+$ aws sts get-session-token \
+    --session-duration 900 \
+    --serial-number "YourMFADeviceSerialNumber" \
+    --token-code 123456 \
+    --profile produser
+{
+    "Credentials": {
+        "AccessKeyId": "",
+        "SecretAccessKey": "",
+        "SessionToken": "",
+        "Expiration": "2020-05-19T18:06:10+00:00"
+    }
+}
+----
+
+NOTE: サンプルは異なるがアクセスキーのプレフィックスが"ASIA"になる
+
+----
+$ export AWS_ACCESS_KEY_ID=
+$ export AWS_SECRET_ACCESS_KEY=
+$ export AWS_SESSION_TOKEN=
+$ aws s3 ls
+2013-07-11 17:08:50 mybucket
+2013-07-24 14:55:44 mybucket2
+----
+
+=== 設定ファイル例
+
+==== 一般的な使用
+
+----
+[profile user1]
+output=json
+region=ap-northeast-1
+----
+
+----
+$ AWS_PROFILE=user1 aws s3 ls
+----
+
+==== IAM Roleを使用
+
+----
+[profile user1]
+output=json
+region=ap-northeast-1
+
+[profile poweruser]
+role_arn = arn:aws:iam::123456789012:role/power-access
+source_profile = user1
+----
+
+----
+$ AWS_PROFILE=poweruser aws s3 ls
+----
+
+==== MFA serialだけを使用した設定
+
+----
+[profile user1]
+output=json
+region=ap-northeast-1
+mfa_serial = arn:aws:iam::123456789012:mfa/user1
+----
+
+----
+$ AWS_PROFILE=user1 aws s3 ls
+----
+
+WARNING: これはawscliだけだと動作しないが、aws-vaultなら動作する
+
+==== IAM RoleとMFA serialを使用した設定
+
+----
+[profile user1]
+output=json
+region=ap-northeast-1
+
+[profile poweruser]
+mfa_serial = arn:aws:iam::123456789012:mfa/user1
+role_arn = arn:aws:iam::123456789012:role/power-access
+source_profile = user1
+----
+
+----
+$ AWS_PROFILE=poweruser aws s3 ls
+----

@@ -1,0 +1,55 @@
+
+== アクセスキー管理
+
+=== アクセスキー
+長期的な認証情報でアクセスキーIDとシークレットアクセスキーから構成されるもの。
+
+> アクセスキーは、IAM ユーザーまたは AWS アカウントのルートユーザー の長期的な認証情報です。アクセスキーを使用して、AWS CLI または AWS API (直接または AWS SDK を使用) にプログラムでリクエストに署名することができます。
+-- https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_access-keys.html[AWS Identity and Access Management ユーザーガイド]
+
+> アクセスキーは、アクセスキー ID (例: AKIAIOSFODNN7EXAMPLE) とシークレットアクセスキー (例: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY) の 2 つの部分から構成されます。ユーザー名とパスワードと同様に、リクエストを認証するために、アクセスキー ID とシークレットアクセスキーの両方を使用する必要があります。ユーザー名とパスワードと同様に、アクセスキーをしっかり管理してください。
+-- https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_access-keys.html[AWS Identity and Access Management ユーザーガイド]
+
+NOTE: IDプレフィックスはエンティティタイプごとに一意なものが定義されている。(アクセスキーは"AKIA")
+https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_identifiers.html#identifiers-unique-ids[AWS Identity and Access Management ユーザーガイド > IAM ID > 一意の識別子]
+
+NOTE: 署名については
+https://docs.aws.amazon.com/ja_jp/general/latest/gr/signing_aws_api_requests.html[AWS API リクエストの署名]
+を参照
+
+流出しないようしっかり管理しなければならない。
+
+=== アクセスキーを管理するためのベストプラクティス
+> アクセスキーを持っていれば誰でも同じレベルの AWS リソースにアクセスできます。したがって、AWS でのアクセスキーの保護は非常に困難で、しかも責任共有モデルに沿って行う必要があります。
+-- https://docs.aws.amazon.com/ja_jp/general/latest/gr/aws-access-keys-best-practices.html[AWS 全般のリファレンス リファレンスガイド > AWS アクセスキーを管理するためのベストプラクティス]
+
+今回はベストプラクティスの一部を取り上げる。
+
+==== 長期のアクセスキーの代わりに一時的なセキュリティ認証情報 (IAM ロール) を使用する
+> IAM ユーザーや AWS アカウントのルートユーザー に関連付けられているアクセスキーなど、長期のアクセスキーは手動で取り消すまで有効です。ただし、IAM ロールや AWS Security Token Service の他の機能を通して取得した一時的なセキュリティ認証情報は、短期間で期限切れとなります。認証情報が誤って開示された場合のリスクに備えて、一時的なセキュリティ認証情報を使用することができます。
+
+==== IAM ユーザーのアクセスキーを適切に管理する
+- アクセスキーを直接コードに埋め込まないでください。
+- 異なるアプリケーションには、異なるアクセスキーを使用します。
+- アクセスキーを定期的に更新します
+- 使用していないアクセスキーを削除します
+- 最も精度の高い操作ができるよう、多要素認証を設定します。
+
+=== IAM でのセキュリティのベストプラクティス
+> AWS リソースのセキュリティを確保するために、AWS Identity and Access Management (IAM) サービスの以下の推奨事項に従うことができます。
+-- https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/best-practices.html[AWS Identity and Access Management ユーザーガイド > IAM でのセキュリティのベストプラクティス]
+
+アクセスキー関連のものだけ取り上げる。
+
+==== アクセスキーを共有しない
+> アクセスキーを使用すると、プログラムから AWS にアクセスできます。暗号化されていないコード内にアクセスキーを埋め込んだり、これらのセキュリティ認証情報を AWS アカウントのユーザー間で共有したりしないでください。
+
+==== 認証情報を定期的にローテーションする
+> お客様自身のパスワードとアクセスキーを定期的に変更し、アカウント内のすべての IAM ユーザーにも変更を促してください。
+
+==== 不要な認証情報を削除する
+> IAM ユーザーの不要な認証情報 (つまり、パスワードとアクセスキー) は削除します
+
+NOTE: アクセスキーみたいなセンシティブな情報をcommitしないために
+https://github.com/awslabs/git-secrets[git-secrets]
+みたいなものも非常に有効

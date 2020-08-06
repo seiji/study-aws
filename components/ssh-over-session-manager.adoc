@@ -1,0 +1,6 @@
+
+== Session Managerを通してSSH接続
+
+=== Requirements
+- AWS Systems Manager Session Manager (>= 1.1.54.0)
+https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html

@@ -1,0 +1,103 @@
+
+== AWS Vault
+
+> AWS Vault is a tool to securely store and access AWS credentials in a development environment.
+
+> AWS Vault stores IAM credentials in your operating system's secure keystore and then generates temporary credentials from those to expose to your shell and applications. It's designed to be complementary to the AWS CLI tools, and is aware of your profiles and configuration in ~/.aws/config.
+-- https://github.com/99designs/aws-vault
+
+NOTE: インストールについては
+https://github.com/99designs/aws-vault#installing[99designs/aws-vault#installing]
+を参照
+
+----
+$ aws-vault --version
+v6.0.0-beta5
+----
+
+=== AWS Vaultの主な機能
+
+- **AWS CLIの補完ツール**であるということ
+- OSのセキュアなkeystoreに保存(MacOSならkeychain)
+- 一時認証情報を用いて**環境変数として**展開
+- RoleなしのMFAでも対応
+
+=== AWS Vaultの設定
+https://github.com/99designs/aws-vault/blob/master/USAGE.md#managing-credentials
+
+
+TIP: 自分のアクセスキーを使用して設定
+
+----
+$ aws-vault add produser
+Enter Access Key Id: ABDCDEFDASDASF
+Enter Secret Key: %
+----
+
+NOTE: ~/.aws/.credentialは使われない
+
+TIP: 自分にあった設定を行う
+
+==== MFA serialだけを使用した設定
+
+----
+[profile produser]
+output=json
+region=ap-northeast-1
+mfa_serial = arn:aws:iam::123456789012:mfa/produser
+----
+
+==== IAM RoleとMFA serialを使用した設定
+
+----
+[profile produser]
+output=json
+region=ap-northeast-1
+
+[profile poweruser]
+mfa_serial = arn:aws:iam::123456789012:mfa/produser
+role_arn = arn:aws:iam::123456789012:role/power-access
+source_profile = user1
+----
+
+=== AWS Vaultの使用
+
+TIP: 実行してみる
+
+==== Profile一覧
+
+----
+$ aws-vault list
+Profile                  Credentials              Sessions
+=======                  ===========              ========
+default                  -                        -
+produser                 -                        -
+----
+
+==== コマンド実行
+
+----
+$ aws-vault exec produser -- aws sts get-caller-identity
+{
+    "UserId": "AIDASAMPLEUSERID",
+    "Account": "1234567890123",
+    "Arn": "arn:aws:iam::1234567890123:user/produser"
+}
+----
+
+----
+$ aws-vault exec produser -- env | grep AWS
+----
+
+----
+$ aws-vault exec produser -- $SHELL
+$ aws sts get-caller-identity
+----
+
+----
+$ aws-vault list
+Profile                  Credentials              Sessions
+=======                  ===========              ========
+default                  -                        -
+produser                 produser                 sts.GetSessionToken:4h17m13s
+----
