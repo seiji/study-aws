@@ -1,4 +1,4 @@
-= SessionManager経由のVPC接続
+= SessionManager経由のSSH接続
 :icons: font
 :rouge-style: github
 :sectnums:
@@ -12,4 +12,5 @@ include::components/manage-accesskey.adoc[]
 include::components/awscli.adoc[]
 include::components/aws-vault.adoc[]
 include::components/ssh-over-session-manager.adoc[]
-include::components/ssh-portforwarding.adoc[]
+// include::components/ssh-proxyjump.adoc[]
+// include::components/ssh-portforwarding.adoc[]

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>SessionManager経由のVPC接続</title>
+<title>SessionManager経由のSSH接続</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>SessionManager経由のVPC接続</h1>
+<h1>SessionManager経由のSSH接続</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -468,12 +468,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_aws_vaultの使用">3.3. AWS Vaultの使用</a></li>
 </ul>
 </li>
-<li><a href="#_session_managerを通してssh接続">4. Session Managerを通してSSH接続</a>
+<li><a href="#_session_manager経由のssh接続">4. Session Manager経由のSSH接続</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements">4.1. Requirements</a></li>
+<li><a href="#_aws_systems_manager">4.1. AWS Systems Manager</a></li>
+<li><a href="#_aws_systems_manager_session_manager">4.2. AWS Systems Manager Session Manager</a></li>
+<li><a href="#_session_managerを通してssh接続を有効にする">4.3. Session Managerを通してSSH接続を有効にする</a></li>
 </ul>
 </li>
-<li><a href="#_ssh_portfowarding">5. SSH Portfowarding</a></li>
 </ul>
 </div>
 </div>
@@ -1280,31 +1281,235 @@ produser                 produser                 sts.GetSessionToken:4h17m13s</
 </div>
 </div>
 <div class="sect1">
-<h2 id="_session_managerを通してssh接続">4. Session Managerを通してSSH接続</h2>
+<h2 id="_session_manager経由のssh接続">4. Session Manager経由のSSH接続</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_requirements">4.1. Requirements</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>AWS Systems Manager Session Manager (&gt;= 1.1.54.0)
-<a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html</a></p>
-</li>
-</ul>
+<h3 id="_aws_systems_manager">4.1. AWS Systems Manager</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>AWS Systems Manager は、AWS でインフラストラクチャを表示および制御するために使用できる AWS のサービスです。</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/what-is-systems-manager.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/what-is-systems-manager.html</a>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_aws_systems_manager_session_manager">4.2. AWS Systems Manager Session Manager</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Session Manager はフルマネージド型 AWS Systems Manager 機能であり、インタラクティブなワンクリックブラウザベースのシェルや AWS CLI を介して、EC2 インスタンス、オンプレミスインスタンス、仮想マシン (VM) を管理できます。Session Manager を使用すると、インバウンドポートを開いたり、踏み台ホストを維持したり、SSH キーを管理したりすることなく、監査可能なインスタンスを安全に管理できます</p>
 </div>
-<div class="sect1">
-<h2 id="_ssh_portfowarding">5. SSH Portfowarding</h2>
-<div class="sectionbody">
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html</a>
+</div>
+</div>
+<div class="paragraph">
+<p>関係ある機能を抜き出すと</p>
+</div>
+<div class="sect3">
+<h4 id="_インバウンドポートを開いたり踏み台ホストや_ssh_キーを管理したりする必要はありません">4.2.1. インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません</h4>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>インスタンスでインバウンド SSH ポートとリモート PowerShell ポートを開いたままにすると、エンティティが許可されていないコマンドや、悪意のあるコマンドをインスタンス上で実行するリスクが大幅に増加します。Session Manager は、これらの着信ポートを閉じることにより、SSH キーと証明書、踏み台ホスト、およびジャンプボックスの管理からユーザーを解放して、セキュリティ体制を向上させるのに役立ちます。</p>
+</div>
+</blockquote>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+SSHキーと証明書は設定しても使えるが、必要ではない
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ポート転送">4.2.2. ポート転送</h4>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>リモートインスタンス内の任意のポートをクライアントのローカルポートにリダイレクトします。その後、ローカルポートに接続し、インスタンス内で実行されているサーバーアプリケーションにアクセスします。</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_session_managerを通してssh接続を有効にする">4.3. Session Managerを通してSSH接続を有効にする</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>AWS アカウントのユーザーが AWS CLI を使用して、Session Manager を使用しているインスタンスへの Secure Shell (SSH) 接続を確立できるようにすることができます</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-getting-started-enable-ssh-connections.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-getting-started-enable-ssh-connections.html</a>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+SessionManagerPluginが必要であり、インストールについては
+<a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html">AWS Systems Manager ユーザーガイド &gt; (オプション) AWS CLI 用の Session Manager Plugin をインストールする</a>
+を参照
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ session-manager-plugin --version
+1.1.61.0</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ssh設定">4.3.1. SSH設定</h4>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+ローカルマシンで編集する
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>~/.ssh/config (ssh時に指定すれば別のファイルでも可)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># SSH over Session Manager
+host i-* mi-*
+  ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+AWS Systems Manager ドキュメントはこちらを参照
+<a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-ssm-docs.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-ssm-docs.html</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_セッションの開始ssh">4.3.2. セッションの開始(SSH)</h4>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>他のタイプのセッションの接続で使用する ssm-user アカウントではなく、PEM (Privacy Enhanced Mail) 証明書に関連付けられているインスタンスのユーザーを使用する必要があります。たとえば、Linux の EC2 インスタンスでは、デフォルトのユーザーは ec2-userです</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html</a>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+CentOSとはcentosとか
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+指定のインスタンスに対してSSHセッションを開始してみる
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ssh ec2-user@i-xxxxxxx
+Last login: Thu Aug  6 08:54:47 2020 from localhost
 
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+35 package(s) needed for security, out of 124 available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-xxxx ~]$</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+sshキーが設定されている場合は指定する必要がある
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ssh -i ~/.ssh/id_rsa ec2-user@i-xxxxxxx</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+config指定の場合
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Host dev
+  User ec2-user
+  HostName i-xxxxxx
+  IdentityFile ~/.ssh/id_rsa</pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-06 18:53:38 +0900
+Last updated 2020-08-07 10:11:07 +0900
 </div>
 </div>
 </body>

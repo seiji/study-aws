@@ -1,2 +1,7 @@
 
-== SSH Portfowarding
+== SSH PortForwarding
+SSH Tunnelingとも呼ばれる
+
+=== Local port forwarding
+=== Remote port forwarding
+=== Dynamic port forwarding

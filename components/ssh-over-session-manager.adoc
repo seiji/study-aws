@@ -1,6 +1,87 @@
 
-== Session Managerを通してSSH接続
+== Session Manager経由のSSH接続
 
-=== Requirements
-- AWS Systems Manager Session Manager (>= 1.1.54.0)
-https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
+=== AWS Systems Manager
+> AWS Systems Manager は、AWS でインフラストラクチャを表示および制御するために使用できる AWS のサービスです。
+-- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/what-is-systems-manager.html
+
+
+=== AWS Systems Manager Session Manager
+> Session Manager はフルマネージド型 AWS Systems Manager 機能であり、インタラクティブなワンクリックブラウザベースのシェルや AWS CLI を介して、EC2 インスタンス、オンプレミスインスタンス、仮想マシン (VM) を管理できます。Session Manager を使用すると、インバウンドポートを開いたり、踏み台ホストを維持したり、SSH キーを管理したりすることなく、監査可能なインスタンスを安全に管理できます
+-- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html
+
+関係ある機能を抜き出すと
+
+==== インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません
+> インスタンスでインバウンド SSH ポートとリモート PowerShell ポートを開いたままにすると、エンティティが許可されていないコマンドや、悪意のあるコマンドをインスタンス上で実行するリスクが大幅に増加します。Session Manager は、これらの着信ポートを閉じることにより、SSH キーと証明書、踏み台ホスト、およびジャンプボックスの管理からユーザーを解放して、セキュリティ体制を向上させるのに役立ちます。
+
+NOTE: SSHキーと証明書は設定しても使えるが、必要ではない
+
+==== ポート転送
+> リモートインスタンス内の任意のポートをクライアントのローカルポートにリダイレクトします。その後、ローカルポートに接続し、インスタンス内で実行されているサーバーアプリケーションにアクセスします。
+
+=== Session Managerを通してSSH接続を有効にする
+> AWS アカウントのユーザーが AWS CLI を使用して、Session Manager を使用しているインスタンスへの Secure Shell (SSH) 接続を確立できるようにすることができます
+-- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-getting-started-enable-ssh-connections.html
+
+NOTE: SessionManagerPluginが必要であり、インストールについては
+https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html[AWS Systems Manager ユーザーガイド > (オプション) AWS CLI 用の Session Manager Plugin をインストールする]
+を参照
+
+----
+$ session-manager-plugin --version
+1.1.61.0
+----
+
+==== SSH設定
+
+TIP: ローカルマシンで編集する
+
+~/.ssh/config (ssh時に指定すれば別のファイルでも可)
+
+----
+# SSH over Session Manager
+host i-* mi-*
+  ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+----
+
+NOTE: AWS Systems Manager ドキュメントはこちらを参照
+https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-ssm-docs.html
+
+==== セッションの開始(SSH)
+> 他のタイプのセッションの接続で使用する ssm-user アカウントではなく、PEM (Privacy Enhanced Mail) 証明書に関連付けられているインスタンスのユーザーを使用する必要があります。たとえば、Linux の EC2 インスタンスでは、デフォルトのユーザーは ec2-userです
+-- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html
+
+NOTE: CentOSとはcentosとか
+
+TIP: 指定のインスタンスに対してSSHセッションを開始してみる
+
+----
+$ ssh ec2-user@i-xxxxxxx
+Last login: Thu Aug  6 08:54:47 2020 from localhost
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+35 package(s) needed for security, out of 124 available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-xxxx ~]$
+----
+
+NOTE: sshキーが設定されている場合は指定する必要がある
+
+----
+$ ssh -i ~/.ssh/id_rsa ec2-user@i-xxxxxxx
+----
+
+NOTE: config指定の場合
+
+----
+Host dev
+  User ec2-user
+  HostName i-xxxxxx
+  IdentityFile ~/.ssh/id_rsa
+----
+
