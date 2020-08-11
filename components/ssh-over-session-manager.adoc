@@ -5,20 +5,23 @@
 > AWS Systems Manager は、AWS でインフラストラクチャを表示および制御するために使用できる AWS のサービスです。
 -- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/what-is-systems-manager.html
 
-
 === AWS Systems Manager Session Manager
 > Session Manager はフルマネージド型 AWS Systems Manager 機能であり、インタラクティブなワンクリックブラウザベースのシェルや AWS CLI を介して、EC2 インスタンス、オンプレミスインスタンス、仮想マシン (VM) を管理できます。Session Manager を使用すると、インバウンドポートを開いたり、踏み台ホストを維持したり、SSH キーを管理したりすることなく、監査可能なインスタンスを安全に管理できます
 -- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html
 
-関係ある機能を抜き出すと
+==== 関係ある主な機能
 
-==== インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません
+===== インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません
 > インスタンスでインバウンド SSH ポートとリモート PowerShell ポートを開いたままにすると、エンティティが許可されていないコマンドや、悪意のあるコマンドをインスタンス上で実行するリスクが大幅に増加します。Session Manager は、これらの着信ポートを閉じることにより、SSH キーと証明書、踏み台ホスト、およびジャンプボックスの管理からユーザーを解放して、セキュリティ体制を向上させるのに役立ちます。
+NOTE: SSH接続するにはSSHキーが必要です。
 
-NOTE: SSHキーと証明書は設定しても使えるが、必要ではない
-
-==== ポート転送
+===== ポート転送
 > リモートインスタンス内の任意のポートをクライアントのローカルポートにリダイレクトします。その後、ローカルポートに接続し、インスタンス内で実行されているサーバーアプリケーションにアクセスします。
+
+==== セッションとは
+> A session is a connection made to an instance using Session Manager. Sessions are based on a secure bi-directional communication channel between the client (you) and the remote managed instance that streams inputs and outputs for commands. Traffic between a client and a managed instance is encrypted using TLS 1.2, and requests to create the connection are signed using Sigv4. This two-way communication enables interactive bash and PowerShell access to instances.
+-- https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html#what-is-a-session
+
 
 === Session Managerを通してSSH接続を有効にする
 > AWS アカウントのユーザーが AWS CLI を使用して、Session Manager を使用しているインスタンスへの Secure Shell (SSH) 接続を確立できるようにすることができます
@@ -56,10 +59,20 @@ https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-ssm-do
 
 NOTE: CentOSとはcentosとか
 
+NOTE: セッションの開始手段には以下の種類がある +
+- Systems Manager コンソール +
+- Amazon EC2 コンソール +
+- AWS CLI +
+- SSH +
+- ポート転送 +
+- インタラクティブコマンド +
+
 TIP: 指定のインスタンスに対してSSHセッションを開始してみる
 
+===== command line指定
+
 ----
-$ ssh ec2-user@i-xxxxxxx
+$ ssh -i ~/.ssh/id_rsa ec2-user@i-xxxxxxx
 Last login: Thu Aug  6 08:54:47 2020 from localhost
 
        __|  __|_  )
@@ -72,13 +85,7 @@ Run "sudo yum update" to apply all updates.
 [ec2-user@ip-xxxx ~]$
 ----
 
-NOTE: sshキーが設定されている場合は指定する必要がある
-
-----
-$ ssh -i ~/.ssh/id_rsa ec2-user@i-xxxxxxx
-----
-
-NOTE: config指定の場合
+===== config指定
 
 ----
 Host dev
@@ -87,3 +94,7 @@ Host dev
   IdentityFile ~/.ssh/id_rsa
 ----
 
+NOTE: Services > SystemsManager > Session Managerで開いているセッション一覧が見れます
+
+NOTE: SSH over Session ManagerではSessionManagerのログの取得はできません(コンソールとかは取得可能) +
+但し、セッションのStartEndはCloudTrailには残ります。

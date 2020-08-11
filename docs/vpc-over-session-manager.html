@@ -1148,6 +1148,8 @@ v6.0.0-beta5</pre>
 <div class="paragraph">
 <p><a href="https://github.com/99designs/aws-vault/blob/master/USAGE.md#managing-credentials" class="bare">https://github.com/99designs/aws-vault/blob/master/USAGE.md#managing-credentials</a></p>
 </div>
+<div class="sect3">
+<h4 id="_credentialの追加">3.2.1. Credentialの追加</h4>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1156,6 +1158,18 @@ v6.0.0-beta5</pre>
 </td>
 <td class="content">
 自分のアクセスキーを使用して設定
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+SSO Userはこの手順は不要
 </td>
 </tr>
 </table>
@@ -1179,6 +1193,9 @@ Enter Secret Key: %</pre>
 </tr>
 </table>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_aws_cli_設定">3.2.2. AWS CLI 設定</h4>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1191,8 +1208,8 @@ Enter Secret Key: %</pre>
 </tr>
 </table>
 </div>
-<div class="sect3">
-<h4 id="_mfa_serialだけを使用した設定_2">3.2.1. MFA serialだけを使用した設定</h4>
+<div class="sect4">
+<h5 id="_iam_user_かつ_mfa_serialだけを使用した設定">IAM User かつ MFA serialだけを使用した設定</h5>
 <div class="listingblock">
 <div class="content">
 <pre>[profile produser]
@@ -1202,8 +1219,8 @@ mfa_serial = arn:aws:iam::123456789012:mfa/produser</pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_iam_roleとmfa_serialを使用した設定_2">3.2.2. IAM RoleとMFA serialを使用した設定</h4>
+<div class="sect4">
+<h5 id="_iam_user_かつ_iam_roleとmfa_serialを使用した設定">IAM User かつ IAM RoleとMFA serialを使用した設定</h5>
 <div class="listingblock">
 <div class="content">
 <pre>[profile produser]
@@ -1214,6 +1231,31 @@ region=ap-northeast-1
 mfa_serial = arn:aws:iam::123456789012:mfa/produser
 role_arn = arn:aws:iam::123456789012:role/power-access
 source_profile = user1</pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_sso_userの設定">SSO Userの設定</h5>
+<div class="listingblock">
+<div class="content">
+<pre>[profile sso-produser]
+sso_start_url = https://awssso.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 1234567890
+sso_role_name = AWSAdministratorAccess</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+自分のアカウント設定を確認
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -1308,39 +1350,41 @@ produser                 produser                 sts.GetSessionToken:4h17m13s</
 &#8212; <a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html</a>
 </div>
 </div>
-<div class="paragraph">
-<p>関係ある機能を抜き出すと</p>
-</div>
 <div class="sect3">
-<h4 id="_インバウンドポートを開いたり踏み台ホストや_ssh_キーを管理したりする必要はありません">4.2.1. インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません</h4>
+<h4 id="_関係ある主な機能">4.2.1. 関係ある主な機能</h4>
+<div class="sect4">
+<h5 id="_インバウンドポートを開いたり踏み台ホストや_ssh_キーを管理したりする必要はありません">インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません</h5>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>インスタンスでインバウンド SSH ポートとリモート PowerShell ポートを開いたままにすると、エンティティが許可されていないコマンドや、悪意のあるコマンドをインスタンス上で実行するリスクが大幅に増加します。Session Manager は、これらの着信ポートを閉じることにより、SSH キーと証明書、踏み台ホスト、およびジャンプボックスの管理からユーザーを解放して、セキュリティ体制を向上させるのに役立ちます。</p>
+<p>インスタンスでインバウンド SSH ポートとリモート PowerShell ポートを開いたままにすると、エンティティが許可されていないコマンドや、悪意のあるコマンドをインスタンス上で実行するリスクが大幅に増加します。Session Manager は、これらの着信ポートを閉じることにより、SSH キーと証明書、踏み台ホスト、およびジャンプボックスの管理からユーザーを解放して、セキュリティ体制を向上させるのに役立ちます。
+NOTE: SSH接続するにはSSHキーが必要です。</p>
 </div>
 </blockquote>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-SSHキーと証明書は設定しても使えるが、必要ではない
-</td>
-</tr>
-</table>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_ポート転送">4.2.2. ポート転送</h4>
+<div class="sect4">
+<h5 id="_ポート転送">ポート転送</h5>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
 <p>リモートインスタンス内の任意のポートをクライアントのローカルポートにリダイレクトします。その後、ローカルポートに接続し、インスタンス内で実行されているサーバーアプリケーションにアクセスします。</p>
 </div>
 </blockquote>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_セッションとは">4.2.2. セッションとは</h4>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A session is a connection made to an instance using Session Manager. Sessions are based on a secure bi-directional communication channel between the client (you) and the remote managed instance that streams inputs and outputs for commands. Traffic between a client and a managed instance is encrypted using TLS 1.2, and requests to create the connection are signed using Sigv4. This two-way communication enables interactive bash and PowerShell access to instances.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html#what-is-a-session" class="bare">https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html#what-is-a-session</a>
+</div>
 </div>
 </div>
 </div>
@@ -1450,6 +1494,24 @@ CentOSとはcentosとか
 </tr>
 </table>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+セッションの開始手段には以下の種類がある<br>
+- Systems Manager コンソール<br>
+- Amazon EC2 コンソール<br>
+- AWS CLI<br>
+- SSH<br>
+- ポート転送<br>
+- インタラクティブコマンド<br>
+</td>
+</tr>
+</table>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1462,9 +1524,11 @@ CentOSとはcentosとか
 </tr>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_command_line指定">command line指定</h5>
 <div class="listingblock">
 <div class="content">
-<pre>$ ssh ec2-user@i-xxxxxxx
+<pre>$ ssh -i ~/.ssh/id_rsa ec2-user@i-xxxxxxx
 Last login: Thu Aug  6 08:54:47 2020 from localhost
 
        __|  __|_  )
@@ -1477,41 +1541,41 @@ Run "sudo yum update" to apply all updates.
 [ec2-user@ip-xxxx ~]$</pre>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-sshキーが設定されている場合は指定する必要がある
-</td>
-</tr>
-</table>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>$ ssh -i ~/.ssh/id_rsa ec2-user@i-xxxxxxx</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-config指定の場合
-</td>
-</tr>
-</table>
-</div>
+<div class="sect4">
+<h5 id="_config指定">config指定</h5>
 <div class="listingblock">
 <div class="content">
 <pre>Host dev
   User ec2-user
   HostName i-xxxxxx
   IdentityFile ~/.ssh/id_rsa</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Services &gt; SystemsManager &gt; Session Managerで開いているセッション一覧が見れます
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+SSH over Session ManagerではSessionManagerのログの取得はできません(コンソールとかは取得可能)<br>
+但し、セッションのStartEndはCloudTrailには残ります。
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>

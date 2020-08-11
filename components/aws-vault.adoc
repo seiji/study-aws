@@ -26,7 +26,10 @@ v6.0.0-beta5
 https://github.com/99designs/aws-vault/blob/master/USAGE.md#managing-credentials
 
 
+==== Credentialの追加
 TIP: 自分のアクセスキーを使用して設定
+
+NOTE: SSO Userはこの手順は不要
 
 ----
 $ aws-vault add produser
@@ -36,9 +39,11 @@ Enter Secret Key: %
 
 NOTE: ~/.aws/.credentialは使われない
 
+==== AWS CLI 設定
+
 TIP: 自分にあった設定を行う
 
-==== MFA serialだけを使用した設定
+===== IAM User かつ MFA serialだけを使用した設定
 
 ----
 [profile produser]
@@ -47,7 +52,7 @@ region=ap-northeast-1
 mfa_serial = arn:aws:iam::123456789012:mfa/produser
 ----
 
-==== IAM RoleとMFA serialを使用した設定
+===== IAM User かつ IAM RoleとMFA serialを使用した設定
 
 ----
 [profile produser]
@@ -59,6 +64,19 @@ mfa_serial = arn:aws:iam::123456789012:mfa/produser
 role_arn = arn:aws:iam::123456789012:role/power-access
 source_profile = user1
 ----
+
+===== SSO Userの設定
+
+----
+[profile sso-produser]
+sso_start_url = https://awssso.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 1234567890
+sso_role_name = AWSAdministratorAccess
+
+----
+
+NOTE: 自分のアカウント設定を確認
 
 === AWS Vaultの使用
 
