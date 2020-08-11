@@ -116,7 +116,7 @@ TIP: 自分のプロファイルを使用して実行してみる
 
 ----
 $ aws sts get-session-token \
-    --session-duration 900 \
+    --duration-seconds 900 \
     --serial-number "YourMFADeviceSerialNumber" \
     --token-code 123456 \
     --profile produser

@@ -959,7 +959,7 @@ An error occurred (AccessDenied) when calling the ListBuckets operation: Access 
 <div class="listingblock">
 <div class="content">
 <pre>$ aws sts get-session-token \
-    --session-duration 900 \
+    --duration-seconds 900 \
     --serial-number "YourMFADeviceSerialNumber" \
     --token-code 123456 \
     --profile produser
@@ -1399,6 +1399,18 @@ SessionManagerPluginが必要であり、インストールについては
 host i-* mi-*
   ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"</pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+i-*はEC2インスタンスのInstanceIDの形式、オンプレミス環境やハイブリッド環境のサーバーおよび仮想マシン(VM)に対してSystemManagerをセットアップすることでManagedInstanceとすることができ、mi-*という形式になる
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock note">
 <table>

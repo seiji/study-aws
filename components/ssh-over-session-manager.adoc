@@ -45,6 +45,8 @@ host i-* mi-*
   ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 ----
 
+NOTE: i-*はEC2インスタンスのInstanceIDの形式、オンプレミス環境やハイブリッド環境のサーバーおよび仮想マシン(VM)に対してSystemManagerをセットアップすることでManagedInstanceとすることができ、mi-*という形式になる
+
 NOTE: AWS Systems Manager ドキュメントはこちらを参照
 https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-ssm-docs.html
 
