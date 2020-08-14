@@ -1305,8 +1305,15 @@ produser                 -                        -</pre>
 </div>
 <div class="listingblock">
 <div class="content">
+<pre>$ aws-vault exec produser -- aws s3 ls</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
 <pre>$ aws-vault exec produser -- $SHELL
-$ aws sts get-caller-identity</pre>
+$ aws sts get-caller-identity
+$ aws s3 ls
+$ exit</pre>
 </div>
 </div>
 <div class="listingblock">

@@ -103,13 +103,20 @@ $ aws-vault exec produser -- aws sts get-caller-identity
 }
 ----
 
+
 ----
 $ aws-vault exec produser -- env | grep AWS
 ----
 
 ----
+$ aws-vault exec produser -- aws s3 ls
+----
+
+----
 $ aws-vault exec produser -- $SHELL
 $ aws sts get-caller-identity
+$ aws s3 ls
+$ exit
 ----
 
 ----
