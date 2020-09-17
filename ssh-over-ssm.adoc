@@ -1,0 +1,11 @@
+= Session Manager経由のSSH接続
+:icons: font
+:rouge-style: github
+:sectnums:
+:source-highlighter: rouge
+:toc: left
+:xrefstyle: short
+
+include::components/ssh-over-session-manager.adoc[]
+// include::components/ssh-proxyjump.adoc[]
+// include::components/ssh-portforwarding.adoc[]
