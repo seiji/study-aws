@@ -1,0 +1,13 @@
+= アクセスキー管理とAWS Vault
+:icons: font
+:rouge-style: github
+:sectnums:
+:source-highlighter: rouge
+:toc: left
+:xrefstyle: short
+
+include::components/manage-accesskey.adoc[]
+include::components/awscli.adoc[]
+include::components/aws-vault.adoc[]
+// include::components/ssh-proxyjump.adoc[]
+// include::components/ssh-portforwarding.adoc[]
