@@ -1,0 +1,126 @@
+= Amazon Athena
+:icons: font
+:rouge-style: github
+:sectnums:
+:source-highlighter: highlightjs
+:toc: left
+:xrefstyle: short
+
+
+== AWS でのモダンデータアーキテクチャ
+> データレイク、データウェアハウス、および専用データストアをシームレスに統合する
+
+https://aws.amazon.com/jp/big-data/datalakes-and-analytics/modern-data-architecture/
+
+== データレイクとは
+> データレイクは、規模にかかわらず、すべての構造化データと非構造化データを保存できる一元化されたリポジトリです。
+
+https://aws.amazon.com/jp/big-data/datalakes-and-analytics/what-is-a-data-lake/
+
+=== データカタログ
+
+== AWS上のデータレイク
+
+> Amazon S3 データレイクでデータサイロを排し、大規模で簡単な分析を可能にする
+
+https://aws.amazon.com/jp/big-data/datalakes-and-analytics/datalakes/
+
+=== Collection
+- Amazon Kinesis
+- AWS IoT Core
+- AWS Snowball
+- Amazon SQS
+- AWS DMS
+- AWS Direct Connect
+
+=== Storage
+- S3
+- DynamoDB
+- ElastiCache
+
+=== Processing
+- AWS Lambda
+- AWS Glue
+- Amazon EMR
+- Amazon ML
+- Amazon SageMaker
+- AWS Data Pipeline
+
+=== Analysis
+- ElasticSearch
+- Amazon Athena
+- Amazon Redshift
+
+=== Visualization
+- Amazon QuickSight
+
+== AWS Glue
+
+> AWS Glueは、データの分類、クリーニング、加工を優れたコスト効果で容易に行い、さまざまなデータストア間およびデータストリーム間でデータを確実に移動するための、完全マネージド型 ETLサービスです。
+
+https://docs.aws.amazon.com/ja_jp/glue/latest/dg/what-is-glue.html
+
+- データカタログの定義、作成
+- ETL job
+
+== Amazon Athena
+
+> Amazon Athena は、標準 SQL を使用して Simple Storage Service (Amazon S3) 内のデータを直接、簡単に分析できるようにするインタラクティブなクエリサービスです。
+
+- サーバーレスで、インフラストラクチャや管理は不要
+- 大規模データに対しても高速なクエリ
+- 事前のデータロード不要
+- 標準SQLを使用するだけで簡単にクエリを実行
+- スキャンしたデータに対しての従量課金
+
+https://aws.amazon.com/jp/athena/features/
+
+=== サーバーレス
+
+- サーバーレスなのでインフラストラクチャを管理する必要がない
+- 設定、ソフトウェアの更新が不要
+- データセットやユーザー数の拡大によるインフラストラクチャのスケーリングについて心配する必要がない
+
+インフラストラクチャではなくデータに集中できる。
+
+=== 標準SQL (ANSI SQL)
+
+- Amazon Athenaでは[Presto(PrestoDB) が採用されている
+- 標準SQL(ANSI SQL)を使用して、S3内のデータセットに対してクエリを実行できる
+
+=== コスト
+
+=== Amazon Athenaとは
+
+Presto(PrestoDB)が採用され、標準SQL(ANSI SQL)を使用してS3内のデータを直接分析できるマネージドなクエリサービス
+Hiveメタストア互換のデータカタログ
+
+== Athenaのユースケース
+
+- ログを
+
+== Athenaの特性
+
+- OLTPではなくOLAP向け
+- ETLではなく分析向け
+
+== Athenaの制約
+
+
+== OSS
+
+=== Presto
+
+- PrestoDB https://prestodb.io/
+- PrestoSQL(
+
+==== Prestoのアーキテクチャ
+
+=== Apache Hive Metastore
+
+
+//include::components/awscli.adoc[]
+//include::components/aws-vault.adoc[]
+//include::components/ssh-over-session-manager.adoc[]
+// include::components/ssh-proxyjump.adoc[]
+// include::components/ssh-portforwarding.adoc[]
